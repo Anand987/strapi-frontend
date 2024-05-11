@@ -1,6 +1,6 @@
 import qs from 'qs';
 
-import { flattenAttributes } from '@/lib/utils';
+import { flattenAttributes, getStrapiURL } from '@/lib/utils';
 import { HeroSection } from '@/components/custom/HeroSection';
 
 // Constructing the query for STRAPI
@@ -14,6 +14,9 @@ const homePageQuery = qs.stringify({
         link: {
           populate: true,
         },
+        feature: {
+          populate: true,
+        }
       },
     },
   },
@@ -21,7 +24,7 @@ const homePageQuery = qs.stringify({
 
 // Function to fetch the data from path
 async function getStrapiData(path:string) {
-  const baseURL = "http://localhost:1337";
+  const baseURL = getStrapiURL();
 
   const url = new URL(path, baseURL);
   url.search = homePageQuery;
