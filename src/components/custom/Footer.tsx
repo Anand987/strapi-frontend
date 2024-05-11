@@ -36,7 +36,7 @@ export function Footer({ data }: Readonly<FooterProps>) {
         <div className="flex items-center space-x-4">
           {socialLink.map((link) => {
             return (
-              <Link className="text-white hover:text-gray-300" href={link.url}>
+              <Link key={link.url} className="text-white hover:text-gray-300" href={link.url}>
                 {selectSocialIcon(link.url)}
                 <span className="sr-only">Visit us at {link.text}</span>
               </Link>
