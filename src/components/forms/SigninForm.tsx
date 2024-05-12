@@ -17,15 +17,17 @@ import { loginUserAction } from "@/data/actions/auth-actions";
 import { useFormState } from "react-dom";
 import { ZodErrors } from "../custom/ZodErrors";
 import { StrapiErrors } from "../custom/StrapiErrors";
+import { SubmitButton } from "../custom/SubmitButton";
 
 const INITIAL_STATE = {
+  zodErrors: null,
+  strapiErrors: null,
   data: null,
+  message: null,
 }
 
 export function SigninForm() {
   const [formState, formAction] = useFormState(loginUserAction, INITIAL_STATE)
-  
-  console.log('formState::', formState);
 
   return (
     <div className="w-full max-w-md">
@@ -60,7 +62,7 @@ export function SigninForm() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col">
-            <button className="w-full">Sign In</button>
+            <SubmitButton className="w-full" text="Sign In" loadingText="Loading" />
             <StrapiErrors error={formState?.strapiErrors} />
           </CardFooter>
         </Card>

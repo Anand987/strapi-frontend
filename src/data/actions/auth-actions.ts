@@ -118,3 +118,8 @@ export async function loginUserAction(prevState: any, formData: FormData){
   cookies().set("jwt", responseData.jwt, config);
   redirect("/dashboard");
 }
+
+export async function logoutAction() {
+  cookies().set("jwt", "", {...config, maxAge: 0});
+  redirect("/")
+}
