@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { loginUserAction } from "@/data/actions/auth-actions";
 import { useFormState } from "react-dom";
 import { ZodErrors } from "../custom/ZodErrors";
+import { StrapiErrors } from "../custom/StrapiErrors";
 
 const INITIAL_STATE = {
   data: null,
@@ -60,6 +61,7 @@ export function SigninForm() {
           </CardContent>
           <CardFooter className="flex flex-col">
             <button className="w-full">Sign In</button>
+            <StrapiErrors error={formState?.strapiErrors} />
           </CardFooter>
         </Card>
         <div className="mt-4 text-center text-sm">

@@ -1,12 +1,12 @@
 "use server"
 
 import { z } from "zod";
-import { registerUserService } from "../services/auth-service";
+import { loginUserService, registerUserService } from "../services/auth-service";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 const config = {
-  maxAge: 60 * 60 * 24 * 7,
+  maxAge: 60 * 60 * 24 * 7, // 1 week
   path: "/",
   domain: process.env.HOST ?? "localhost",
   httpOnly: true,
@@ -95,9 +95,26 @@ export async function loginUserAction(prevState: any, formData: FormData){
     }
   }
 
-  return {
-    ...prevState,
-    data: "ok",
+  const responseData = await loginUserService(validatedFields.data);
+
+  if(!responseData) {
+    return {
+      ...prevState,
+      strapiErrors: null,
+      zodErrors: null,
+      message: "Ops! Something went wrong. Please try again."
+    }
   }
 
+  if(responseData.error){
+    return {
+      ...prevState,
+      strapiErrors: responseData.error,
+      zodErrors: null,
+      message: "Failed to login."
+    }
+  }
+
+  cookies().set("jwt", responseData.jwt, config);
+  redirect("/dashboard");
 }
