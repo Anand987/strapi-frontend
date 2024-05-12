@@ -45,8 +45,6 @@ export async function registerUserAction(prevState: any, formData: FormData) {
   }
   
   const responseData = await registerUserService(validatedFields.data);
-  cookies().set("jwt", responseData.jwt, config)
-  redirect("/dashboard");
 
   if(!responseData) {
     return {
@@ -66,8 +64,6 @@ export async function registerUserAction(prevState: any, formData: FormData) {
     }
   }
 
- return {
-  ...prevState,
-  data: "ok",
- }
+  cookies().set("jwt", responseData.jwt, config)
+  redirect("/dashboard");
 }
