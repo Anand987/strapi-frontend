@@ -5,18 +5,6 @@ import { registerUserService } from "../services/auth-service";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-const schemaRegister = z.object({
-  username: z.string().min(3).max(20, {
-    message: "Username must be between 3 and 20 characters."
-  }),
-  password: z.string().min(6).max(100, {
-    message: "Password must be between 6 and 100 characters",
-  }),
-  email: z.string().email({
-    message: "Please enter a valid email address."
-  })
-})
-
 const config = {
   maxAge: 60 * 60 * 24 * 7,
   path: "/",
@@ -25,6 +13,17 @@ const config = {
   secure: process.env.NODE_ENV === "production",
 }
 
+const schemaRegister = z.object({
+  username: z.string().min(3).max(20, {
+    message: "Username must be between 3 and 20 characters."
+  }),  
+  password: z.string().min(6).max(100, {
+    message: "Password must be between 6 and 100 characters",
+  }),  
+  email: z.string().email({
+    message: "Please enter a valid email address."
+  })  
+})  
 
 export async function registerUserAction(prevState: any, formData: FormData) {
   console.log("Hello From Register User Action")
@@ -66,4 +65,39 @@ export async function registerUserAction(prevState: any, formData: FormData) {
 
   cookies().set("jwt", responseData.jwt, config)
   redirect("/dashboard");
+}
+
+const schemaLogin = z.object({
+  identifier: z.string().min(3, {
+    message: "Identifier must have at least 3 or more characters"
+  }),
+  password: z.string().min(6, {
+    message: 'Password must have at least 6 or more characters'
+  }).max(100, {
+    message: 'Password must be between 6 and 100 characters'
+  })
+})
+
+export async function loginUserAction(prevState: any, formData: FormData){
+  console.log('Hello from Login User Action')
+
+  const validatedFields = schemaLogin.safeParse({
+    identifier: formData.get('identifier'),
+    password: formData.get('password')
+  })
+
+  if(!validatedFields.success){
+    return {
+      ...prevState,
+      zodErrors: validatedFields.error.flatten().fieldErrors,
+      strapiErrors: null,
+      message: "Missing Fields. Failed to Login"
+    }
+  }
+
+  return {
+    ...prevState,
+    data: "ok",
+  }
+
 }
