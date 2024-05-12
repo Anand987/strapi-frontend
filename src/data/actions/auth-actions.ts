@@ -2,6 +2,8 @@
 
 import { z } from "zod";
 import { registerUserService } from "../services/auth-service";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 const schemaRegister = z.object({
   username: z.string().min(3).max(20, {
@@ -15,15 +17,24 @@ const schemaRegister = z.object({
   })
 })
 
+const config = {
+  maxAge: 60 * 60 * 24 * 7,
+  path: "/",
+  domain: process.env.HOST ?? "localhost",
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+}
+
+
 export async function registerUserAction(prevState: any, formData: FormData) {
   console.log("Hello From Register User Action")
-
+  
   const validatedFields = schemaRegister.safeParse({
     username: formData.get("username"),
     password: formData.get("password"),
     email: formData.get("email"),
   });
-
+  
   if(!validatedFields.success) {
     return {
       ...prevState,
@@ -32,8 +43,10 @@ export async function registerUserAction(prevState: any, formData: FormData) {
       message: "Missing Fields, Failed to Register."
     };
   }
-
+  
   const responseData = await registerUserService(validatedFields.data);
+  cookies().set("jwt", responseData.jwt, config)
+  redirect("/dashboard");
 
   if(!responseData) {
     return {
